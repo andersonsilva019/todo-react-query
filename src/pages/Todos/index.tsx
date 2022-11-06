@@ -1,9 +1,10 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { useQueryTodos } from '../../services/todos'
+import { getTodoById, useQueryTodos } from '../../services/todos'
 import { Container, List, Item } from './styles'
 
 interface Todo {
-  id: string
+  id: number
   title: string
   completed: boolean
 }
@@ -11,6 +12,8 @@ interface Todo {
 export function TodosPage() {
 
   const { data, status, error, isFetching, refetch } = useQueryTodos<Todo[]>()
+
+  const queryClient = useQueryClient()
 
   if (status === 'loading') {
     return <p>Carregando...</p>
@@ -25,7 +28,18 @@ export function TodosPage() {
       <h1>Todos {isFetching ? 'Fetching' : ''} <button onClick={() => refetch()} >Refresh</button></h1>
       <List>
         {data.map(todo => (
-          <Link to={`/todo/${todo.id}`}>
+          <Link
+            to={`/todo/${todo.id}`}
+            onMouseEnter={async () => {
+              await queryClient.prefetchQuery(
+                ['todo', todo.id],
+                () => getTodoById(todo.id),
+                {
+                  staleTime: 10 * 1000, // only prefetch if older than 10 seconds
+                },
+              )
+            }}
+          >
             <Item isCompleted={todo.completed}>
               <span>{todo.title}</span>
             </Item>

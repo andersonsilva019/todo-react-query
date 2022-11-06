@@ -6,7 +6,7 @@ async function getTodos(){
   return data
 }
 
-async function getTodoById(id: string){
+export async function getTodoById(id: number){
   const { data } = await api.get(`/todos/${id}`)
   return data
 }
@@ -20,9 +20,9 @@ export function useQueryTodos<T>(){
   })
 }
 
-export function useQueryTodo<T>(id: string){
+export function useQueryTodo<T>(id: number){
   return useQuery<T>({
-    queryKey: ['todos', id],
+    queryKey: ['todo', id],
     queryFn: () => getTodoById(id),
     staleTime: 1000 * 60 * 5, // 5 minutes
 

@@ -12,7 +12,7 @@ export function TodoPage() {
 
   const { id } = useParams()
 
-  const { data, status } = useQueryTodo<Todo>(id as string)
+  const { data, status } = useQueryTodo<Todo>(Number(id))
 
   if (status === 'loading') {
     return <p>Carregando...</p>
